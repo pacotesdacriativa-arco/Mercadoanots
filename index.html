@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mercado Anotar</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:Arial,sans-serif;
+background:linear-gradient(180deg,#fff4df,#ffcf7a,#ff9e43);
+min-height:100vh;
+color:#7a3d00;
+}
+
+.hidden{
+display:none;
+}
+
+.tela{
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:25px;
+}
+
+.box{
+width:100%;
+max-width:430px;
+background:rgba(255,255,255,.92);
+border-radius:35px;
+padding:35px 25px;
+text-align:center;
+box-shadow:0 15px 35px rgba(255,140,0,.22);
+}
+
+.logo{
+font-size:70px;
+margin-bottom:10px;
+}
+
+h1{
+font-size:34px;
+margin-bottom:10px;
+}
+
+.sub{
+color:#a35a00;
+font-weight:bold;
+}
+
+.btn{
+width:100%;
+padding:15px;
+margin-top:16px;
+border:none;
+border-radius:18px;
+background:linear-gradient(135deg,#ff8a00,#ffb347);
+color:white;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+box-shadow:0 0 18px rgba(255,140,0,.35);
+}
+
+.container{
+max-width:520px;
+margin:auto;
+padding:20px;
+min-height:100vh;
+}
+
+.card{
+background:rgba(255,255,255,.92);
+border-radius:28px;
+padding:20px;
+margin-bottom:18px;
+box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+input,select{
+width:100%;
+padding:14px;
+margin-top:8px;
+border-radius:16px;
+border:1px solid #ffc77d;
+background:#fff9f0;
+font-size:15px;
+}
+
+label{
+display:block;
+margin-top:12px;
+font-weight:bold;
+color:#7a3d00;
+}
+
+.lista{
+margin-top:15px;
+}
+
+.item{
+display:flex;
+align-items:center;
+gap:10px;
+background:#fff7eb;
+padding:12px;
+border-radius:18px;
+margin-top:10px;
+}
+
+.check{
+width:23px;
+height:23px;
+cursor:pointer;
+}
+
+.nome{
+flex:1;
+font-weight:bold;
+}
+
+.preco{
+width:90px;
+padding:8px;
+border-radius:10px;
+border:1px solid #ffbe66;
+text-align:center;
+}
+
+.qtd{
+width:60px;
+padding:8px;
+border-radius:10px;
+border:1px solid #ffbe66;
+text-align:center;
+}
+
+.delete{
+background:#d64028;
+color:white;
+border:none;
+padding:9px 10px;
+border-radius:10px;
+cursor:pointer;
+}
+
+.total{
+text-align:center;
+font-size:24px;
+font-weight:bold;
+margin-top:18px;
+color:#a14d00;
+}
+
+footer{
+text-align:center;
+font-size:12px;
+margin-top:20px;
+color:#8a4a00;
+}
+</style>
+</head>
+
+<body>
+
+<div class="tela" id="inicio">
+
+<div class="box">
+
+<div class="logo">🛒</div>
+
+<h1>Mercado Anotar</h1>
+
+<p class="sub">
+Sua lista de compras organizada ✨
+</p>
+
+<button class="btn" onclick="abrirApp()">
+Abrir lista
+</button>
+
+</div>
+
+</div>
+
+<div class="container hidden" id="app">
+
+<div class="card">
+
+<div class="logo" style="text-align:center;">🍊</div>
+
+<h1 style="text-align:center;">
+Mercado Anotar
+</h1>
+
+<p class="sub" style="text-align:center;">
+Compras simples e rápidas ✨
+</p>
+
+<label>Produto</label>
+<input id="produto" placeholder="Ex: arroz">
+
+<label>Quantidade</label>
+<input type="number" id="quantidade" placeholder="1">
+
+<label>Categoria</label>
+<select id="categoria">
+<option>Comida</option>
+<option>Doce</option>
+<option>Bebida</option>
+<option>Limpeza</option>
+<option>Higiene</option>
+<option>Outros</option>
+</select>
+
+<button class="btn" onclick="adicionar()">
+Adicionar item
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>📝 Lista</h2>
+
+<div id="lista" class="lista"></div>
+
+<div class="total" id="total">
+Total: R$0,00
+</div>
+
+</div>
+
+<footer>
+Mercado Anotar 🍊✨
+</footer>
+
+</div>
+
+<script>
+let itens =
+JSON.parse(localStorage.getItem("mercadoanotar")) || [];
+
+function abrirApp(){
+
+document.getElementById("inicio").style.display="none";
+
+document.getElementById("app").classList.remove("hidden");
+
+renderizar();
+
+}
+
+function dinheiro(v){
+
+return Number(v).toLocaleString(
+"pt-BR",
+{
+style:"currency",
+currency:"BRL"
+});
+
+}
+
+function salvar(){
+
+localStorage.setItem(
+"mercadoanotar",
+JSON.stringify(itens));
+
+}
+
+function adicionar(){
+
+let produto=
+document.getElementById("produto").value;
+
+let quantidade=
+Number(document.getElementById("quantidade").value);
+
+let categoria=
+document.getElementById("categoria").value;
+
+if(!produto || !quantidade){
+
+alert("Preencha produto e quantidade.");
+
+return;
+
+}
+
+itens.push({
+produto,
+quantidade,
+categoria,
+preco:0,
+comprado:false
+});
+
+salvar();
+
+document.getElementById("produto").value="";
+document.getElementById("quantidade").value="";
+
+renderizar();
+
+}
+
+function excluir(index){
+
+itens.splice(index,1);
+
+salvar();
+
+renderizar();
+
+}
+
+function marcar(index){
+
+itens[index].comprado=
+!itens[index].comprado;
+
+salvar();
+
+}
+
+function mudarPreco(index,valor){
+
+itens[index].preco=
+Number(valor)||0;
+
+salvar();
+
+atualizarTotal();
+
+}
+
+function renderizar(){
+
+let lista=
+document.getElementById("lista");
+
+lista.innerHTML="";
+
+itens.forEach((item,index)=>{
+
+lista.innerHTML+=`
+
+<div class="item">
+
+<input
+type="checkbox"
+class="check"
+${item.comprado ? "checked" : ""}
+onchange="marcar(${index})"
+>
+
+<div class="nome">
+${item.produto}
+<br>
+<small>
+${item.quantidade}x • ${item.categoria}
+</small>
+</div>
+
+<input
+type="number"
+class="preco"
+placeholder="Preço"
+value="${item.preco || ""}"
+oninput="mudarPreco(${index},this.value)"
+>
+
+<button
+class="delete"
+onclick="excluir(${index})"
+>
+X
+</button>
+
+</div>
+
+`;
+
+});
+
+atualizarTotal();
+
+}
+
+function atualizarTotal(){
+
+let total=0;
+
+itens.forEach(item=>{
+
+total +=
+(item.preco || 0) *
+(item.quantidade || 1);
+
+});
+
+document.getElementById("total").innerText=
+"Total: " + dinheiro(total);
+
+}
+</script>
+
+</body>
+</html>
